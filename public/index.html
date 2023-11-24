@@ -1,0 +1,67 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TeleFarm</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<div class=navbar>
+    <div class=logo>
+        <img src="placeholder.png" alt="Plant png">
+    </div>
+    <h1>TeleFarm</h1>
+    <div class="dropdown">
+        <button class="dropbtn">Profiles</button>
+        <div class="dropdown-content">
+            <a href="#">Get</a>
+            <a href="#">from</a>
+            <a href="#">database</a>
+        </div>
+    </div>
+    <button class="create-new-btn">New Plant</button>
+    <a href="#" class="analytics-link">Analytics</a>
+</div>
+
+<div class=system-view>
+    <div class=monitor>
+        <img src="tank.svg" alt="tank svg">
+        <span id="tankLevel"></span>
+
+        <img src="soil.svg" alt="soil svg">
+        <span id="soilMoisture"></span>
+
+        <img src="temperature.svg" alt="temperature svg">
+        <span id="temperature"></span>
+
+        <img src="light.svg" alt="light svg">
+        <span id="lightLevel"></span>
+    </div>
+</div>
+
+<footer>
+
+</footer>
+
+<script>
+  const socket = new WebSocket('ws://localhost:3000');
+
+  socket.onopen = function() {
+    console.log('WebSocket connected');
+  };
+
+  socket.onmessage = function(event) {
+    const data = JSON.parse(event.data);
+    document.getElementById('tankLevel').innerText = data.tankLevel + ' %';
+    document.getElementById('soilMoisture').innerText = data.soilMoisture + ' %';
+    document.getElementById('temperature').innerText = data.temperature + ' °C';
+    document.getElementById('lightLevel').innerText = data.lightLevel + ' Lux';
+
+    // for debugging if it's possible to read
+    console.log('Pump Status:', data.pumpStatus);
+  };
+</script>
+</body>
+</html>
