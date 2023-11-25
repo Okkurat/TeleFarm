@@ -40,13 +40,28 @@
         <span id="lightLevel"></span>
     </div>
 </div>
-
 <footer>
-
+    <button id="pumpButton">Pump it Up</button>
 </footer>
 
 <script>
   const socket = new WebSocket('ws://localhost:3000');
+
+  document.getElementById('pumpButton').addEventListener('click', function() {
+
+    // use this example when implementing profile-based stuff
+    fetch('/pump', { method: 'POST' })
+    .then(response => {
+      if (response.ok) {
+        console.log('Pump triggered successfully');
+      } else {
+        console.error('Failed to trigger pump');
+      }
+    })
+    .catch(error => {
+      console.error('Error triggering pump:', error);
+    });
+  });
 
   socket.onopen = function() {
     console.log('WebSocket connected');
@@ -58,9 +73,6 @@
     document.getElementById('soilMoisture').innerText = data.soilMoisture + ' %';
     document.getElementById('temperature').innerText = data.temperature + ' °C';
     document.getElementById('lightLevel').innerText = data.lightLevel + ' Lux';
-
-    // for debugging if it's possible to read
-    console.log('Pump Status:', data.pumpStatus);
   };
 </script>
 </body>
