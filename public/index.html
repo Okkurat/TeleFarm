@@ -15,14 +15,11 @@
     <h1>TeleFarm</h1>
     <div class="dropdown">
         <button class="dropbtn">Profiles</button>
-        <div class="dropdown-content">
-            <a href="#">Get</a>
-            <a href="#">from</a>
-            <a href="#">database</a>
-        </div>
+        <select id="profileNames">
+        </select>
     </div>
-    <button class="create-new-btn">New Plant</button>
-    <a href="#" class="analytics-link">Analytics</a>
+    <a href="http://localhost:3000/profiles"><button type="button">Create or modify profiles</button></a>
+    <a href="#" class="link">Analytics</a>
 </div>
 
 <div class=system-view>
@@ -74,6 +71,40 @@
     document.getElementById('temperature').innerText = data.temperature + ' °C';
     document.getElementById('lightLevel').innerText = data.lightLevel + ' Lux';
   };
+
+  function updateSelectOptions() {
+    fetch('/selectData')
+        .then(response => response.json())
+        .then(data => {
+            const selectElement = document.getElementById('profileNames');
+            // Clear existing options
+            selectElement.innerHTML = '';
+
+            data.forEach(profile => {
+                const option = document.createElement('option');
+                option.value = profile.name;
+                option.textContent = profile.name;
+                selectElement.appendChild(option);
+            });
+        })
+        .catch(error => console.error(error));
+  }
+  updateSelectOptions();
+  document.getElementById('profileNames').addEventListener('click', function() {
+      updateSelectOptions();
+  });
+
+  document.getElementById('profileNames').addEventListener('change', function() {
+            const selectedName = document.getElementById('profileNames').value;
+
+            fetch(`/profileData?name=${selectedName}`)
+                .then(response => response.json())
+                .then(data => {
+                    const profile = data;
+                    console.log(profile[0])
+                })
+                .catch(error => console.error(error));
+        });
 </script>
 </body>
 </html>
