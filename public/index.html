@@ -37,6 +37,7 @@
         <span id="lightLevel"></span>
     </div>
 </div>
+<p id="notificationMessage"></p>
 <footer>
     <button id="pumpButton">Pump it Up</button>
 </footer>
@@ -102,6 +103,7 @@
                 .then(data => {
                     const profile = data;
                     console.log(profile[0])
+                    document.getElementById('notificationMessage').textContent = profile[0].name;
                 })
                 .catch(error => console.error(error));
         });
