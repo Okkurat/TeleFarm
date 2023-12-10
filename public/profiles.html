@@ -12,13 +12,12 @@
         <div>
             <a href="http://localhost:3000" class="home">TeleFarm</a>
         </div>
+    <select id="profileNames">
+    </select>
     <a href="http://localhost:3000/profiles"><button type="button">Create or modify profiles</button></a>
     <a href="http://localhost:3000/statistics"><button type="button">Statistics page</button></a>
     </div>
     </div>
-    <select id="profileNames">
-        
-    </select>
     <label for="nameInput">Name:</label>
     <input type="text" id="nameInput"><br><br>
 
@@ -77,7 +76,7 @@
                 .then(response => response.json())
                 .then(data => {
                     const profile = data;
-                    console.log(profile[0])
+                    //console.log(profile[0])
                     document.getElementById('nameInput').value = profile[0].name;
                     document.getElementById('modeSelect').value = profile[0].auto.toString();
                     document.getElementById('moistureRange').value = profile[0].target_moisture;
@@ -107,7 +106,7 @@
                 amount_of_water: parseInt(amountOfWaterInput)
             };
 
-            console.log(profileData)
+            //console.log(profileData)
 
             fetch('/createProfile', {
                 method: 'POST',
@@ -185,6 +184,7 @@
         })
         .catch(error => console.error('Error modifying profile:', error));
     });
+
     </script>
 </body>
 </html>

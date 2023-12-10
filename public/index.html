@@ -21,7 +21,7 @@
     <a href="http://localhost:3000/statistics"><button type="button">Statistics</button></a>
 </div>
 </div>
-
+<p id="error" style="color: red;"></p>
 <div class=system-view>
     <div class=monitor>
         <img src="tank.svg" alt="tank svg">
@@ -34,8 +34,6 @@
         <span id="lightLevel"></span>
     </div>
 </div>
-<p id="notificationMessage"></p>
-<p id="error"></p>
 <footer>
     <button id="pumpButton">Pump it Up</button>
 </footer>
@@ -49,7 +47,7 @@
     fetch('/pump', { method: 'POST' })
     .then(response => {
       if (response.ok) {
-        console.log('Pump triggered successfully');
+        //console.log('Pump triggered successfully');
       } else {
         console.error('Failed to trigger pump');
       }
@@ -65,10 +63,15 @@
 
   socket.onmessage = function(event) {
     const data = JSON.parse(event.data);
-    console.log(data.errors)
-    console.log(data)
+    //console.log(data.errors)
+    //console.log(data)
     if(data.errors != 0){
-      document.getElementById('error').textContent = "ERROR!!!";
+      if(data.errors == 1){
+      document.querySelector('#error').textContent = "Sensor error!!!";
+      }
+      else {
+      document.querySelector('#error').textContent = "Water level too low!!!";
+      }
     }
     else {
       document.getElementById('error').textContent = "";
@@ -97,7 +100,7 @@
   }
   updateSelectOptions();
   document.getElementById('profileNames').addEventListener('click', function() {
-      updateSelectOptions();
+      updateSelectOptions()
   });
 
   document.getElementById('profileNames').addEventListener('change', function() {
@@ -106,9 +109,8 @@
             fetch(`/profileData?name=${selectedName}`)
                 .then(response => response.json())
                 .then(data => {
-                    const profile = data;
-                    console.log(profile[0])
-                    document.getElementById('notificationMessage').textContent = profile[0].name;
+                    const profile = data
+                    //console.log(profile[0])
                 })
                 .catch(error => console.error(error));
         });

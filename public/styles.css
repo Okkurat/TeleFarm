@@ -287,7 +287,7 @@ footer {
     margin-right: auto;
 }
 
-#pumpButton {
+button {
     background-color: green;
     color: white;
     border-radius: 2px;
@@ -297,7 +297,7 @@ footer {
     cursor: pointer;
 }
 
-#pumpButton:hover {
+Button:hover {
     background-color: darkgreen;
     border-radius: 5px;
 }

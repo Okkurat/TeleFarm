@@ -563,3 +563,21 @@ app.put('/modifyProfile', (req, res) => {
     });
   });
 });
+
+app.get('/selectedProfile', (req, res) => {
+  const selectedProfileQuery = 'SELECT * FROM profile WHERE selected = ?';
+
+  db.get(selectedProfileQuery, [true], (err, selectedProfile) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+
+    if (!selectedProfile) {
+      res.json({}); // Return an empty object if no selected profile is found
+      return;
+    }
+
+    res.json(selectedProfile); // Return the selected profile
+  });
+});

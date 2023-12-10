@@ -5,7 +5,8 @@
         <title>Title</title>
 
         <link rel="stylesheet" href="styles.css">
-
+        </head>
+        <body>
         <div class=navbar>
           <div class=logo>
               <img src="placeholder.png" alt="Plant png">
@@ -13,14 +14,16 @@
                   <a href="http://localhost:3000" class="home">TeleFarm</a>
               </div>
           </div>
+          <div class="dropdown">
+            <select id="profileNames">
+          </select>
           <a href="http://localhost:3000/profiles"><button type="button">Create or modify profiles</button></a>
           <a href="http://localhost:3000/statistics"><button type="button">Statistics</button></a>
       </div>
+      </div>
+
     <h1>Statistics</h1>
-    <div class="dropdown">
-      <select id="profileNames">
-    </select>
-    <p id="error"></p>
+    <p id="error" style="color: red;"></p>
         <div id="container">
             <div>
 
@@ -92,7 +95,7 @@ let moisture = [0]
 let light = [0]
 let time_stamps = [new Date()]
 
-console.log(location.host)
+//console.log(location.host)
 
 const url = "ws://localhost:3000"
 const mywsServer = new WebSocket(url)
@@ -223,10 +226,10 @@ function fetch_data(){
     path += "start=" + new Date(start_time.value).getTime()
     path += "&end=" + new Date(end_time.value).getTime()
   }
-  console.log(path)
+  //console.log(path)
   fetch(path)
   .then((res) => {
-    console.log(res)
+    //console.log(res)
     return res.json()
   })
   .then((res) => {
@@ -276,12 +279,17 @@ mywsServer.onmessage = function(event){
   }
   const { data } = event
   let d = JSON.parse(data)
-  console.log(d)
-  console.log(d.errors)
+  //console.log(d)
+  //console.log(d.errors)
   let date = new Date()
   //let time_stamp = date.getTime()
   if(d.errors != 0){
-    document.querySelector('#error').textContent = "ERROR!!!";
+    if(d.errors == 1){
+      document.querySelector('#error').textContent = "Sensor error!!!";
+    }
+    else {
+      document.querySelector('#error').textContent = "Water level too low!!!";
+    }
   }
   else {
     document.querySelector('#error').textContent = "";
