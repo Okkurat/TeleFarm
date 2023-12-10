@@ -32,6 +32,7 @@
 
     <button id="createProfileBtn">Create Profile</button>
     <button id="deleteProfileBtn">Delete Profile</button>
+    <button id="modifyProfileBtn">Modify Profile</button>
     <p id="notificationMessage"></p>
 
     <script>
@@ -59,6 +60,8 @@
         const moistureRange = document.getElementById('moistureRange');
         const moistureValue = document.getElementById('moistureValue');
         const deleteProfileBtn = document.getElementById('deleteProfileBtn');
+        const modifyProfileBtn = document.getElementById('modifyProfileBtn');
+
 
         profileNamesSelect.addEventListener('change', function() {
             const selectedName = profileNamesSelect.value;
@@ -141,6 +144,40 @@
             })
             .catch(error => console.error('Error deleting profile:', error));
         });
+        modifyProfileBtn.addEventListener('click', function() {
+        const nameInput = document.getElementById('nameInput').value;
+        const modeSelect = document.getElementById('modeSelect').value;
+        const moistureRange = document.getElementById('moistureRange').value;
+        const waterTimingInput = document.getElementById('waterTimingInput').value;
+        const amountOfWaterInput = document.getElementById('amountOfWaterInput').value;
+        const profileData = {
+            name: nameInput,
+            auto: parseInt(modeSelect),
+            target_moisture: parseInt(moistureRange),
+            water_timing: waterTimingInput,
+            amount_of_water: parseInt(amountOfWaterInput)
+        };
+
+        fetch('/modifyProfile', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(profileData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Profile modified successfully:', data);
+            const notificationMessage = document.getElementById('notificationMessage');
+            if(data.error) {
+                notificationMessage.textContent = data.error;
+            } else {
+                notificationMessage.textContent = 'Profile modified successfully';
+            }
+            // Optionally update the UI or perform other actions upon successful profile modification
+        })
+        .catch(error => console.error('Error modifying profile:', error));
+    });
     </script>
 </body>
 </html>

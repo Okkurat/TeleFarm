@@ -508,5 +508,49 @@ async function get_data(parameters, start, end) {
 
 
 // Execute the function every 5 seconds (5,000 milliseconds)
-setInterval(printSelectedProfileMeasurements, 50000); // Runs every 5 seconds
+//setInterval(printSelectedProfileMeasurements, 50000); // Runs every 5 seconds
 
+app.put('/modifyProfile', (req, res) => {
+  const { name, auto, target_moisture, water_timing, amount_of_water } = req.body;
+
+  // Check if the profile exists
+  db.get('SELECT name FROM profile WHERE selected = ?', [true], (err, profile) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+
+    if (!profile) {
+      // Profile doesn't exist
+      res.status(400).json({ error: 'Profile does not exist' });
+      return;
+    }
+    console.log(profile.name)
+    console.log(name)
+
+    // Update the profile
+    const updateQuery = `
+      UPDATE profile
+      SET name = ?,
+          auto = ?,
+          target_moisture = ?,
+          water_timing = ?,
+          amount_of_water = ?
+      WHERE selected = ?
+    `;
+
+    db.run(updateQuery, [name, auto, target_moisture, water_timing, amount_of_water, true], function(err) {
+      if (err) {
+        res.status(500).json({ error: err.message });
+        return;
+      }
+    });
+    db.run('UPDATE measurement SET profile = ? WHERE profile = ?', [name, profile.name], function(err){
+      if(err){
+        res.status(500).json({error: err.message});
+        return;
+      }
+      res.json({ message: 'Profile updated successfully' });
+    });
+  });
+});
