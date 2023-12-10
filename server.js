@@ -93,6 +93,35 @@ app.get('/', (req, res) => {
 });
 
 app.post('/pump', (req, res) => {
+  db.get('SELECT * FROM profile WHERE selected = ?', [true], (err, profile) => {
+    if (err) {
+      console.error(err.message);
+      return;
+    }
+
+    if (profile) {
+      const { name, auto, water_timing, target_moisture, amount_of_water } = profile;
+      const [profileHour, profileMinute] = water_timing.split(':').map(Number);
+      
+      // Construct the message in JSON format
+      const message = JSON.stringify({
+        mode: auto, // Auto mode
+        moisture: target_moisture, // Target moisture
+        water: amount_of_water // Water amount
+      });
+      console.log(message)
+
+      // Publish the message to the 'set' topic
+      client.publish('set', message, function(err) {
+        if (err) {
+          console.error('Error publishing message:', err);
+        } else {
+          console.log(`Message published to 'set' topic for ${name}`);
+        }
+      });
+      
+    }
+  });
   client.publish('telefarm/pump', 'true', function(err) {
     if (err) {
       console.error('Error publishing message:', err);
@@ -406,8 +435,8 @@ function printSelectedProfileMeasurements() {
           return;
         }
 
-        console.log(`Measurements for profile '${selectedProfileName}':`);
-        console.table(measurements); // Print measurements in a tabular format
+        //console.log(`Measurements for profile '${selectedProfileName}':`);
+        //console.table(measurements); // Print measurements in a tabular format
       });
     }
   });
