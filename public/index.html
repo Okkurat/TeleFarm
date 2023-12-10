@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TeleFarm</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<div class=navbar>
+    <div class=logo>
+        <img src="placeholder.png" alt="Plant png">
+    </div>
+    <h1>TeleFarm</h1>
+    <div class="dropdown">
+        <button class="dropbtn">Profiles</button>
+        <select id="profileNames">
+      </select>
+    </div>
+    <a href="http://localhost:3000/profiles"><button type="button">Create or modify profiles</button></a>
+    <a href="http://localhost:3000/statistics" class="link">Statistics</a>
+</div>
+
+<div class=system-view>
+    <div class=monitor>
+        <img src="tank.svg" alt="tank svg">
+        <span id="tankLevel"></span>
+
+        <img src="soil.svg" alt="soil svg">
+        <span id="soilMoisture"></span>
+
+        <img src="light.svg" alt="light svg">
+        <span id="lightLevel"></span>
+    </div>
+</div>
+<p id="notificationMessage"></p>
+<p id="error"></p>
+<footer>
+    <button id="pumpButton">Pump it Up</button>
+</footer>
+
+<script>
+  const socket = new WebSocket('ws://localhost:3000');
+
+  document.getElementById('pumpButton').addEventListener('click', function() {
+
+    // use this example when implementing profile-based stuff
+    fetch('/pump', { method: 'POST' })
+    .then(response => {
+      if (response.ok) {
+        console.log('Pump triggered successfully');
+      } else {
+        console.error('Failed to trigger pump');
+      }
+    })
+    .catch(error => {
+      console.error('Error triggering pump:', error);
+    });
+  });
+
+  socket.onopen = function() {
+    console.log('WebSocket connected');
+  };
+
+  socket.onmessage = function(event) {
+    const data = JSON.parse(event.data);
+    console.log(data.errors)
+    console.log(data)
+    if(data.errors != 0){
+      document.getElementById('error').textContent = "ERROR!!!";
+    }
+    else {
+      document.getElementById('error').textContent = "";
+    }
+    document.getElementById('tankLevel').innerText = data.water + ' %';
+    document.getElementById('soilMoisture').innerText = data.moisture + ' %';
+    document.getElementById('lightLevel').innerText = data.light + ' Lux';
+  };
+
+  function updateSelectOptions() {
+    fetch('/selectData')
+        .then(response => response.json())
+        .then(data => {
+            const selectElement = document.getElementById('profileNames');
+            // Clear existing options
+            selectElement.innerHTML = '';
+
+            data.forEach(profile => {
+                const option = document.createElement('option');
+                option.value = profile.name;
+                option.textContent = profile.name;
+                selectElement.appendChild(option);
+            });
+        })
+        .catch(error => console.error(error));
+  }
+  updateSelectOptions();
+  document.getElementById('profileNames').addEventListener('click', function() {
+      updateSelectOptions();
+  });
+
+  document.getElementById('profileNames').addEventListener('change', function() {
+            const selectedName = document.getElementById('profileNames').value;
+
+            fetch(`/profileData?name=${selectedName}`)
+                .then(response => response.json())
+                .then(data => {
+                    const profile = data;
+                    console.log(profile[0])
+                    document.getElementById('notificationMessage').textContent = profile[0].name;
+                })
+                .catch(error => console.error(error));
+        });
+</script>
+</body>
+</html>
