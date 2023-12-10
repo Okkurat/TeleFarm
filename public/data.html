@@ -6,14 +6,18 @@
 
         <link rel="stylesheet" href="styles.css">
 
-    </head>
-    <body>
-        <header>
-            <a href="http://localhost:3000">To the controller page</a>
-        </header>
+        <div class=navbar>
+          <div class=logo>
+              <img src="placeholder.png" alt="Plant png">
+              <div>
+                  <a href="http://localhost:3000" class="home">TeleFarm</a>
+              </div>
+          </div>
+          <a href="http://localhost:3000/profiles"><button type="button">Create or modify profiles</button></a>
+          <a href="http://localhost:3000/statistics"><button type="button">Statistics</button></a>
+      </div>
     <h1>Statistics</h1>
     <div class="dropdown">
-      <button class="dropbtn">Profiles</button>
       <select id="profileNames">
     </select>
     <p id="error"></p>
@@ -332,6 +336,11 @@ function updateSelectOptions() {
                 .then(data => {
                     const profile = data;
                     console.log(profile[0])
+                    reset_data()
+                    graph.data.datasets[0].data = water
+                    graph.data.datasets[1].data = moisture
+                    graph.data.datasets[2].data = light
+                    graph.data.labels = time_stamps
                     //document.getElementById('notificationMessage').textContent = profile[0].name;
                 })
                 .catch(error => console.error(error));

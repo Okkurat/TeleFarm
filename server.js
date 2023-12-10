@@ -341,15 +341,24 @@ app.delete('/deleteProfile', (req, res) => {
   const name = req.query.name;
 
   db.run('DELETE FROM profile WHERE name = ?', [name], function(err) {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+
+    if (this.changes === 0) {
+      res.json({ success: false }); // Profile not found
+      return;
+    }
+
+    db.run('DELETE FROM measurement WHERE profile = ?', [name], function(err) {
       if (err) {
-          res.status(500).json({ error: err.message });
-          return;
+        res.status(500).json({ error: err.message });
+        return;
       }
-      if (this.changes === 0) {
-          res.json({ success: false }); // Profile not found
-      } else {
-          res.json({ success: true }); // Profile successfully deleted
-      }
+
+      res.json({ success: true }); // Profile successfully deleted
+    });
   });
 });
 
