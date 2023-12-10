@@ -14,6 +14,7 @@
                   <a href="http://localhost:3000" class="home">TeleFarm</a>
               </div>
           </div>
+          <h1 id="selectedProfile"></h1>
           <div class="dropdown">
             <select id="profileNames">
           </select>
@@ -352,6 +353,20 @@ function updateSelectOptions() {
                     //document.getElementById('notificationMessage').textContent = profile[0].name;
                 })
                 .catch(error => console.error(error));
+                setTimeout(() => {
+                    updateSelectedProfile();
+                }, 100);
         });
+        function updateSelectedProfile() {
+        fetch('/selectedProfile')
+            .then(response => response.json())
+            .then(data => {
+                const selectedProfile = document.getElementById('selectedProfile');
+                selectedProfile.textContent = data.name || 'No selected profile';
+            })
+            .catch(error => console.error(error));
+        }
+
+        updateSelectedProfile();
     </script>
 </html>

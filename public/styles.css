@@ -1,5 +1,11 @@
 body {
     background-color: lightblue;
+    margin: auto;
+    width: 80%;
+}
+
+h1 {
+    color: white
 }
 
 .navbar {

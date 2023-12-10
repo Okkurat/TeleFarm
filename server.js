@@ -121,7 +121,7 @@ app.post('/pump', (req, res) => {
       });
       
     }
-  });
+  });/*
   client.publish('telefarm/pump', 'true', function(err) {
     if (err) {
       console.error('Error publishing message:', err);
@@ -130,7 +130,7 @@ app.post('/pump', (req, res) => {
       console.log('Published "true" to telefarm/pump');
       res.status(200).send('Pump triggered successfully');
     }
-  });
+  });*/
 });
 
 app.post('/irrigate', (req, res) => {
@@ -278,25 +278,25 @@ app.get('/profileData', (req, res) => {
         }
 
         if (rows.length > 0) {
-          const selectedProfile = rows[0]; // Assuming you're interested in the first row
-
+          const selectedProfile = rows[0];
           const { auto, target_moisture, amount_of_water } = selectedProfile;
 
           // Construct and publish a message based on the selected profile
           const message = JSON.stringify({
-            mode: auto, // Example value for 'mode'
-            moisture: target_moisture, // Using the target moisture from the profile
-            water: amount_of_water // Using the amount of water from the profile
+            mode: auto,
+            moisture: target_moisture,
+            water: amount_of_water
           });
 
           // Publish the message to the 'set' topic
+          /*
           client.publish('set', message, function(err) {
             if (err) {
               console.error('Error publishing message:', err);
             } else {
               console.log(`Message published to 'set' topic for ${selectedName}`);
             }
-          });
+          });*/
         }
 
         res.json(rows);
@@ -471,7 +471,7 @@ app.get("/statistics/data", async (req, res) => {
     res.send(data);
   } catch (exception) {
     console.log(exception);
-    console.log("FAAAAAIL")
+
     res.sendStatus(500);
   }
 });
@@ -504,7 +504,7 @@ async function get_data(parameters, start, end) {
 
       db.all(query, queryArgs, (err, rows) => {
         if (err) {
-          console.log("ERROROOR")
+
           reject(err);
           return;
         }
@@ -565,14 +565,14 @@ app.put('/modifyProfile', (req, res) => {
 });
 
 app.get('/selectedProfile', (req, res) => {
-  const selectedProfileQuery = 'SELECT * FROM profile WHERE selected = ?';
+  const selectedProfileQuery = 'SELECT name FROM profile WHERE selected = ?';
 
   db.get(selectedProfileQuery, [true], (err, selectedProfile) => {
     if (err) {
       res.status(500).json({ error: err.message });
       return;
     }
-
+    console.log(selectedProfile)
     if (!selectedProfile) {
       res.json({}); // Return an empty object if no selected profile is found
       return;

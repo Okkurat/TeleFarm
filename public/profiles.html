@@ -12,6 +12,7 @@
         <div>
             <a href="http://localhost:3000" class="home">TeleFarm</a>
         </div>
+    <h1 id="selectedProfile"></h1>
     <select id="profileNames">
     </select>
     <a href="http://localhost:3000/profiles"><button type="button">Create or modify profiles</button></a>
@@ -85,7 +86,10 @@
                     moistureValue.textContent = moistureRange.value;
                 })
                 .catch(error => console.error(error));
-        });
+                setTimeout(() => {
+                    updateSelectedProfile();
+                }, 100);
+                });
         moistureRange.addEventListener('input', function() {
             moistureValue.textContent = moistureRange.value;
         });
@@ -124,16 +128,15 @@
                 }
                 else {
                     notificationMessage.textContent = 'Profile created successfully';
-                }
-                // Optionally update the UI or perform other actions upon successful profile creation
+                }            
             })
             .catch(error => console.error('Error creating profile:', error));
 
         });
-        updateSelectOptions();
+        updateSelectOptions()
         profileNamesSelect.addEventListener('click', function() {
-            updateSelectOptions();
-        });
+            updateSelectOptions()
+        })
         deleteProfileBtn.addEventListener('click', function() {
             const nameInput = document.getElementById('nameInput').value;
 
@@ -149,13 +152,13 @@
                 }
             })
             .catch(error => console.error('Error deleting profile:', error));
-        });
+        })
         modifyProfileBtn.addEventListener('click', function() {
-        const nameInput = document.getElementById('nameInput').value;
-        const modeSelect = document.getElementById('modeSelect').value;
-        const moistureRange = document.getElementById('moistureRange').value;
-        const waterTimingInput = document.getElementById('waterTimingInput').value;
-        const amountOfWaterInput = document.getElementById('amountOfWaterInput').value;
+        const nameInput = document.getElementById('nameInput').value
+        const modeSelect = document.getElementById('modeSelect').value
+        const moistureRange = document.getElementById('moistureRange').value
+        const waterTimingInput = document.getElementById('waterTimingInput').value
+        const amountOfWaterInput = document.getElementById('amountOfWaterInput').value
         const profileData = {
             name: nameInput,
             auto: parseInt(modeSelect),
@@ -180,10 +183,20 @@
             } else {
                 notificationMessage.textContent = 'Profile modified successfully';
             }
-            // Optionally update the UI or perform other actions upon successful profile modification
         })
         .catch(error => console.error('Error modifying profile:', error));
     });
+    function updateSelectedProfile() {
+    fetch('/selectedProfile')
+        .then(response => response.json())
+        .then(data => {
+            const selectedProfile = document.getElementById('selectedProfile');
+            selectedProfile.textContent = data.name || 'No selected profile';
+        })
+        .catch(error => console.error(error));
+    }
+
+    updateSelectedProfile();
 
     </script>
 </body>
