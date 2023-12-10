@@ -522,45 +522,37 @@ async function get_data(parameters, start, end) {
 app.put('/modifyProfile', (req, res) => {
   const { name, auto, target_moisture, water_timing, amount_of_water } = req.body;
 
-  // Check if the profile exists
-  db.get('SELECT name FROM profile WHERE selected = ?', [true], (err, profile) => {
+  // Check if the profile already exists with the given name
+  db.get('SELECT name FROM profile WHERE name = ?', [name], (err, profile) => {
     if (err) {
       res.status(500).json({ error: err.message });
       return;
     }
-
-    if (!profile) {
-      // Profile doesn't exist
-      res.status(400).json({ error: 'Profile does not exist' });
+    
+    if (profile) {
+      res.status(400).json({ error: 'Profile with that name already exists' });
       return;
     }
-    console.log(profile.name)
-    console.log(name)
 
-    // Update the profile
-    const updateQuery = `
-      UPDATE profile
-      SET name = ?,
-          auto = ?,
-          target_moisture = ?,
-          water_timing = ?,
-          amount_of_water = ?
-      WHERE selected = ?
-    `;
+    // Update the selected profile
+    db.run('UPDATE profile SET name = ?, auto = ?, target_moisture = ?, water_timing = ?, amount_of_water = ? WHERE selected = ?', 
+      [name, auto, target_moisture, water_timing, amount_of_water, true], function(updateErr) {
+        if (updateErr) {
+          res.status(500).json({ error: updateErr.message });
+          return;
+        }
 
-    db.run(updateQuery, [name, auto, target_moisture, water_timing, amount_of_water, true], function(err) {
-      if (err) {
-        res.status(500).json({ error: err.message });
-        return;
+        // Update the corresponding measurements with the new profile name
+        db.run('UPDATE measurement SET profile = ? WHERE profile = ?', [name, req.body.name], function(measurementsErr) {
+          if (measurementsErr) {
+            res.status(500).json({ error: measurementsErr.message });
+            return;
+          }
+
+          res.json({ message: 'Profile updated successfully' });
+        });
       }
-    });
-    db.run('UPDATE measurement SET profile = ? WHERE profile = ?', [name, profile.name], function(err){
-      if(err){
-        res.status(500).json({error: err.message});
-        return;
-      }
-      res.json({ message: 'Profile updated successfully' });
-    });
+    );
   });
 });
 
