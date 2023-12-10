@@ -204,7 +204,7 @@ function fetch_data(){
   reset_data()
   live_data.checked = false
 
-  let path = "/statistcs/data?"
+  let path = "/statistics/data?"
   if(cb_water.checked) {
     path += "water=1&"
   }
@@ -221,24 +221,24 @@ function fetch_data(){
   }
   console.log(path)
   fetch(path)
-  .then((res) => res.json())
   .then((res) => {
-  console.log(res)
+    console.log(res)
+    return res.json()
+  })
+  .then((res) => {
 
-  if(cb_water.checked && res.water) {
-    graph.data.datasets[0].data = res.water.slice()
+  if(cb_water.checked && res[0].water) {
+    graph.data.datasets[0].data = res.map(item => item.water);
   }
-  if(cb_moisture.checked && res.moisture){
-    graph.data.datasets[1].data = res.moisture.slice()
+  if(cb_moisture.checked && res[0].moisture){
+    graph.data.datasets[1].data = res.map(item => item.moisture);
   }
-  if(cb_light.checked && res.light){
-    graph.data.datasets[2].data = res.light.slice()
+  if(cb_light.checked && res[0].light){
+    graph.data.datasets[2].data = res.map(item => item.light);
   }
   time_stamps = []
-  for(let date of res.time_stamp){
-    time_stamps.push(new Date(date))
-  }
-  graph.data.labels = time_stamps.slice()
+  time_stamps = res.map(item => new Date(item.time_stamp));
+  graph.data.labels = time_stamps;
   graph.update()
   })
 

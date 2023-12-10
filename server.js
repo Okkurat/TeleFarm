@@ -435,8 +435,8 @@ function printSelectedProfileMeasurements() {
           return;
         }
 
-        //console.log(`Measurements for profile '${selectedProfileName}':`);
-        //console.table(measurements); // Print measurements in a tabular format
+        console.log(`Measurements for profile '${selectedProfileName}':`);
+        console.table(measurements); // Print measurements in a tabular format
       });
     }
   });
@@ -444,6 +444,7 @@ function printSelectedProfileMeasurements() {
 
 app.get("/statistics/data", async (req, res) => {
   let parameters = ["time_stamp"];
+  console.log(req.query)
 
   if (req.query.water) {
     parameters.push("water");
@@ -457,9 +458,11 @@ app.get("/statistics/data", async (req, res) => {
 
   try {
     let data = await get_data(parameters, req.query.start, req.query.end);
+    //console.log(data)
     res.send(data);
   } catch (exception) {
     console.log(exception);
+    console.log("FAAAAAIL")
     res.sendStatus(500);
   }
 });
@@ -467,7 +470,6 @@ app.get("/statistics/data", async (req, res) => {
 async function get_data(parameters, start, end) {
   return new Promise((resolve, reject) => {
     const selectedProfileQuery = 'SELECT name FROM profile WHERE selected = ?';
-
     // Fetch the selected profile name
     db.get(selectedProfileQuery, [true], (err, selectedProfile) => {
       if (err) {
@@ -483,18 +485,21 @@ async function get_data(parameters, start, end) {
       let query = `SELECT ${parameters.join(', ')} FROM measurement WHERE profile = ?`;
 
       const queryArgs = [selectedProfile.name];
-
-      if (start !== undefined && end !== undefined) {
+      console.log(isNaN(start))
+      if (!isNaN(start) && !isNaN(start)) {
         query += ' AND time_stamp >= ? AND time_stamp <= ?';
-        queryArgs.push(start, end);
+        queryArgs.push(parseInt(start), parseInt(end));
       }
+      console.log(query)
+      console.log(queryArgs)
 
       db.all(query, queryArgs, (err, rows) => {
         if (err) {
+          console.log("ERROROOR")
           reject(err);
           return;
         }
-
+        //console.log(rows)
         resolve(rows);
       });
     });
@@ -503,5 +508,5 @@ async function get_data(parameters, start, end) {
 
 
 // Execute the function every 5 seconds (5,000 milliseconds)
-setInterval(printSelectedProfileMeasurements, 5000); // Runs every 5 seconds
+setInterval(printSelectedProfileMeasurements, 50000); // Runs every 5 seconds
 
