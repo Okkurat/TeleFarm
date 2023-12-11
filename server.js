@@ -523,7 +523,7 @@ app.put('/modifyProfile', (req, res) => {
   const { name, auto, target_moisture, water_timing, amount_of_water } = req.body;
 
   // Check if the profile already exists with the given name
-  db.get('SELECT name FROM profile WHERE name = ?', [name], (err, profile) => {
+  db.get('SELECT name FROM profile WHERE name = ? AND selected != ?', [name, true], (err, profile) => {
     if (err) {
       res.status(500).json({ error: err.message });
       return;
