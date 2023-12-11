@@ -7,18 +7,25 @@
 </head>
 <body>
     <div class=navbar>
-    <div class=logo>
-        <img src="placeholder.png" alt="Plant png">
-        <div>
-            <a href="http://localhost:3000" class="home">TeleFarm</a>
+        <div class=logo>
+            <img src="placeholder.png" alt="Plant png">
+            <div>
+              <a href="http://localhost:3000" class="home">TeleFarm</a>
+            </div>
         </div>
-    <h1 id="selectedProfile"></h1>
-    <select id="profileNames">
-    </select>
-    <a href="http://localhost:3000/profiles"><button type="button">Create or modify profiles</button></a>
-    <a href="http://localhost:3000/statistics"><button type="button">Statistics page</button></a>
+        <div class="dropdown">
+            <button class="dropbtn">Profiles</button>
+            <div class="dropdown-content">
+              <select id="profileNames">
+              </select>
+            </div>
+        </div>
+        <a href="http://localhost:3000/profiles" class="profile">Create/Modify Profile</a>
+        <a href="http://localhost:3000/statistics" class="statistics">Statistics</a>
     </div>
-    </div>
+    
+    <div class="profile-view">
+        <h1>User Profiles</h1>
     <label for="nameInput">Name:</label>
     <input type="text" id="nameInput"><br><br>
 

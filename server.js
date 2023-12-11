@@ -11,7 +11,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 const server = http.createServer(app);
 const wss = new WebSocket.Server({server});
 
-const brokerUrl = 'mqtt://localhost';
+const brokerUrl = 'mqtt://192.168.1.106';
 const options = {
   clientId: 'mqtt_subscriber',
   clean: true,
@@ -22,24 +22,23 @@ let latestSensorData = {};
 
 // measurements published on telefarm/status
 client.on('connect', () => {
-  client.subscribe('telefarm/status', (err) => {
+  client.subscribe('status', (err) => {
     if (err) console.error('Error subscribing:', err);
     else console.log('Subscribed to telefarm/status');
   });
 });
 
 client.on('message', (topic, message) => {
-  if (topic === 'telefarm/status') {
+  if (topic === 'status') {
     const data = JSON.parse(message.toString());
     latestSensorData = data;
     let date = new Date()
     let time_stamp = date.getTime()
     let selectedProfile;
     let profileName;
-
+    console.log(latestSensorData)
     // Assuming 'profile' represents the currently selected profile from the profiles page
     const { water, light, moisture, errors, mode } = latestSensorData;
-    //console.log(latestSensorData)
     if(errors == 0){
 
     
@@ -557,7 +556,7 @@ app.put('/modifyProfile', (req, res) => {
 });
 
 app.get('/selectedProfile', (req, res) => {
-  const selectedProfileQuery = 'SELECT name FROM profile WHERE selected = ?';
+  const selectedProfileQuery = 'SELECT * FROM profile WHERE selected = ?';
 
   db.get(selectedProfileQuery, [true], (err, selectedProfile) => {
     if (err) {
@@ -569,7 +568,21 @@ app.get('/selectedProfile', (req, res) => {
       res.json({}); // Return an empty object if no selected profile is found
       return;
     }
+    const message = JSON.stringify({
+      mode: selectedProfile.auto, // Auto mode
+      moisture: selectedProfile.target_moisture, // Target moisture
+      water: selectedProfile.amount_of_water // Water amount
+    });
+    console.log(message)
 
+    // Publish the message to the 'set' topic
+    client.publish('set', message, function(err) {
+      if (err) {
+        console.error('Error publishing message:', err);
+      } else {
+        console.log(`Message published to 'set' topic for ${selectedProfile.name}`);
+      }
+    });
     res.json(selectedProfile); // Return the selected profile
   });
 });

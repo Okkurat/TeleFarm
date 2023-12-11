@@ -7,23 +7,27 @@
         <link rel="stylesheet" href="styles.css">
         </head>
         <body>
-        <div class=navbar>
-          <div class=logo>
-              <img src="placeholder.png" alt="Plant png">
-              <div>
+          <div class=navbar>
+            <div class=logo>
+                <img src="placeholder.png" alt="Plant png">
+                <div>
                   <a href="http://localhost:3000" class="home">TeleFarm</a>
-              </div>
-          </div>
-          <h1 id="selectedProfile"></h1>
-          <div class="dropdown">
-            <select id="profileNames">
-          </select>
-          <a href="http://localhost:3000/profiles"><button type="button">Create or modify profiles</button></a>
-          <a href="http://localhost:3000/statistics"><button type="button">Statistics</button></a>
+                </div>
+            </div>
+            <div class="dropdown">
+                <button class="dropbtn">Profiles</button>
+                <div class="dropdown-content">
+                  <select id="profileNames">
+                  </select>
+                </div>
+            </div>
+            <a href="http://localhost:3000/profiles" class="profile">Create/Modify Profile</a>
+            <a href="http://localhost:3000/statistics" class="statistics">Statistics</a>
+        </div>
+        <div class="inline_element">
+          <h1 class="left-element">Statistics</h1>
+          <h1 class="center-element" id="selectedProfile"></h1>
       </div>
-      </div>
-
-    <h1>Statistics</h1>
     <p id="error" style="color: red;"></p>
         <div id="container">
             <div>
