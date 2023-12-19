@@ -45,95 +45,94 @@
 </footer>
 
 <script>
-  const socket = new WebSocket('ws://localhost:3000');
+  'use strict'
+  const socket = new WebSocket('ws://localhost:3000')
 
   document.getElementById('pumpButton').addEventListener('click', function() {
 
-    // use this example when implementing profile-based stuff
+    // Do fetch on the pump route when the pumpButton is pressed
     fetch('/pump', { method: 'POST' })
     .then(response => {
       if (response.ok) {
-        //console.log('Pump triggered successfully');
       } else {
-        console.error('Failed to trigger pump');
+        console.error('Failed to trigger pump')
       }
     })
     .catch(error => {
-      console.error('Error triggering pump:', error);
-    });
-  });
+      console.error('Error triggering pump:', error)
+    })
+  })
 
   socket.onopen = function() {
-    console.log('WebSocket connected');
-  };
+    console.log('WebSocket connected')
+  }
 
   socket.onmessage = function(event) {
-    const data = JSON.parse(event.data);
-    //console.log(data.errors)
-    //console.log(data)
+    const data = JSON.parse(event.data)
     if(data.errors != 0){
       if(data.errors == 1){
-      document.querySelector('#error').textContent = "Sensor error!!!";
+      document.querySelector('#error').textContent = 'Sensor error!!!'
       }
       else {
-      document.querySelector('#error').textContent = "Water level too low!!!";
+      document.querySelector('#error').textContent = 'Water level too low!!!'
       }
     }
     else {
-      document.getElementById('error').textContent = "";
+      document.getElementById('error').textContent = ''
     }
-    document.getElementById('tankLevel').innerText = data.water + ' %';
-    document.getElementById('soilMoisture').innerText = data.moisture + ' %';
-    document.getElementById('lightLevel').innerText = data.light + ' Lux';
-  };
-
+    document.getElementById('tankLevel').innerText = data.water + ' %'
+    document.getElementById('soilMoisture').innerText = data.moisture + ' %'
+    document.getElementById('lightLevel').innerText = data.light + ' Lux'
+  }
+  // Function to update select menu 
   function updateSelectOptions() {
     fetch('/selectData')
         .then(response => response.json())
         .then(data => {
-            const selectElement = document.getElementById('profileNames');
+            const selectElement = document.getElementById('profileNames')
             // Clear existing options
-            selectElement.innerHTML = '';
+            selectElement.innerHTML = ''
 
             data.forEach(profile => {
-                const option = document.createElement('option');
-                option.value = profile.name;
-                option.textContent = profile.name;
-                selectElement.appendChild(option);
-            });
+                const option = document.createElement('option')
+                option.value = profile.name
+                option.textContent = profile.name
+                selectElement.appendChild(option)
+            })
         })
-        .catch(error => console.error(error));
+        .catch(error => console.error(error))
   }
-  updateSelectOptions();
+  // Run the function on page load
+  updateSelectOptions()
   document.getElementById('profileNames').addEventListener('click', function() {
       updateSelectOptions()
-  });
-
+  })
+  // Event for profile change on the select menu
   document.getElementById('profileNames').addEventListener('change', function() {
-            const selectedName = document.getElementById('profileNames').value;
+            const selectedName = document.getElementById('profileNames').value
 
             fetch(`/profileData?name=${selectedName}`)
                 .then(response => response.json())
                 .then(data => {
                     const profile = data
-                    //console.log(profile[0])
                 })
-                .catch(error => console.error(error));
+                .catch(error => console.error(error))
                 setTimeout(() => {
-                    updateSelectedProfile();
-                }, 100);
-        });
+                    updateSelectedProfile()
+                }, 100)
+        })
+  // Function to insert the current profile on the page
   function updateSelectedProfile() {
     fetch('/selectedProfile')
         .then(response => response.json())
         .then(data => {
-            const selectedProfile = document.getElementById('selectedProfile');
-            selectedProfile.textContent = data.name || 'No selected profile';
+            const selectedProfile = document.getElementById('selectedProfile')
+            selectedProfile.textContent = data.name || 'No selected profile'
         })
-        .catch(error => console.error(error));
+        .catch(error => console.error(error))
     }
-
-  updateSelectedProfile();
+  // Run this function on page load
+  updateSelectedProfile()
 </script>
 </body>
 </html>

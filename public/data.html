@@ -100,8 +100,6 @@ let moisture = [0]
 let light = [0]
 let time_stamps = [new Date()]
 
-//console.log(location.host)
-
 const url = "ws://localhost:3000"
 const mywsServer = new WebSocket(url)
 
@@ -240,17 +238,17 @@ function fetch_data(){
   .then((res) => {
 
   if(cb_water.checked && res[0].water) {
-    graph.data.datasets[0].data = res.map(item => item.water);
+    graph.data.datasets[0].data = res.map(item => item.water)
   }
   if(cb_moisture.checked && res[0].moisture){
-    graph.data.datasets[1].data = res.map(item => item.moisture);
+    graph.data.datasets[1].data = res.map(item => item.moisture)
   }
   if(cb_light.checked && res[0].light){
-    graph.data.datasets[2].data = res.map(item => item.light);
+    graph.data.datasets[2].data = res.map(item => item.light)
   }
   time_stamps = []
-  time_stamps = res.map(item => new Date(item.time_stamp));
-  graph.data.labels = time_stamps;
+  time_stamps = res.map(item => new Date(item.time_stamp))
+  graph.data.labels = time_stamps
   graph.update()
   })
 
@@ -276,7 +274,7 @@ for(let i = 0; i < checkboxes.length; i++){
   })
 }
 
-//handling message event
+// Handling message event
 mywsServer.onmessage = function(event){
 
   if(!live_data.checked){
@@ -284,20 +282,18 @@ mywsServer.onmessage = function(event){
   }
   const { data } = event
   let d = JSON.parse(data)
-  //console.log(d)
-  //console.log(d.errors)
+
   let date = new Date()
-  //let time_stamp = date.getTime()
   if(d.errors != 0){
     if(d.errors == 1){
-      document.querySelector('#error').textContent = "Sensor error!!!";
+      document.querySelector('#error').textContent = 'Sensor error!!!'
     }
     else {
-      document.querySelector('#error').textContent = "Water level too low!!!";
+      document.querySelector('#error').textContent = 'Water level too low!!!'
     }
   }
   else {
-    document.querySelector('#error').textContent = "";
+    document.querySelector('#error').textContent = ''
   }
   if(d.water !== undefined){
     water.push(d.water)
@@ -319,58 +315,62 @@ mywsServer.onmessage = function(event){
   }
   graph.update()
 }
+
+// Function for updating the select menu choices
 function updateSelectOptions() {
     fetch('/selectData')
         .then(response => response.json())
         .then(data => {
-            const selectElement = document.getElementById('profileNames');
+            const selectElement = document.getElementById('profileNames')
             // Clear existing options
-            selectElement.innerHTML = '';
+            selectElement.innerHTML = ''
 
             data.forEach(profile => {
-                const option = document.createElement('option');
-                option.value = profile.name;
-                option.textContent = profile.name;
-                selectElement.appendChild(option);
-            });
+                const option = document.createElement('option')
+                option.value = profile.name
+                option.textContent = profile.name
+                selectElement.appendChild(option)
+            })
         })
-        .catch(error => console.error(error));
+        .catch(error => console.error(error))
   }
-  updateSelectOptions();
+  // Run the function on page load
+  updateSelectOptions()
   document.getElementById('profileNames').addEventListener('click', function() {
-      updateSelectOptions();
-  });
+      updateSelectOptions()
+  })
 
+  // Add event when profile is changed on the select menu
   document.getElementById('profileNames').addEventListener('change', function() {
-            const selectedName = document.getElementById('profileNames').value;
+            const selectedName = document.getElementById('profileNames').value
 
             fetch(`/profileData?name=${selectedName}`)
                 .then(response => response.json())
                 .then(data => {
-                    const profile = data;
+                    const profile = data
                     console.log(profile[0])
                     reset_data()
                     graph.data.datasets[0].data = water
                     graph.data.datasets[1].data = moisture
                     graph.data.datasets[2].data = light
                     graph.data.labels = time_stamps
-                    //document.getElementById('notificationMessage').textContent = profile[0].name;
                 })
-                .catch(error => console.error(error));
+                .catch(error => console.error(error))
                 setTimeout(() => {
-                    updateSelectedProfile();
-                }, 100);
-        });
+                    updateSelectedProfile()
+                }, 100)
+        })
+        // Function to insert the current profile on the page
         function updateSelectedProfile() {
         fetch('/selectedProfile')
             .then(response => response.json())
             .then(data => {
-                const selectedProfile = document.getElementById('selectedProfile');
-                selectedProfile.textContent = data.name || 'No selected profile';
+                const selectedProfile = document.getElementById('selectedProfile')
+                selectedProfile.textContent = data.name || 'No selected profile'
             })
-            .catch(error => console.error(error));
+            .catch(error => console.error(error))
         }
-
-        updateSelectedProfile();
+        // Run this function on page load
+        updateSelectedProfile()
     </script>
 </html>
