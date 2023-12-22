@@ -50,7 +50,7 @@ function measure() {
     mode,
   };
 
-  client.publish('telefarm/status', JSON.stringify(data));
+  client.publish('status', JSON.stringify(data));
 }
 
 client.on('connect', () => {
@@ -64,7 +64,7 @@ client.on('connect', () => {
     }
   });
 
-  client.subscribe('telefarm/pump', (err) => {
+  client.subscribe('pump', (err) => {
     if (err) {
       console.error('Subscription error:', err);
     } else {

@@ -12,8 +12,8 @@ app.use(express.json())
 app.use(express.static(path.join(__dirname, 'public')))
 const server = http.createServer(app)
 const wss = new WebSocket.Server({server})
-
-const brokerUrl = 'mqtt://192.168.1.106'
+const brokerUrl = 'mqtt:localhost'
+//const brokerUrl = 'mqtt://192.168.1.106'
 const options = {
   clientId: 'mqtt_subscriber',
   clean: true,
@@ -39,7 +39,7 @@ app.get('/profiles', (req, res) => {
 client.on('connect', () => {
   client.subscribe('status', (err) => {
     if (err) console.error('Error subscribing:', err)
-    else console.log('Subscribed to telefarm/status')
+    else console.log('Subscribed to status')
   })
 })
 /*
@@ -131,7 +131,7 @@ app.post('/pump', (req, res) => {
     }
   })
 })
-// 
+// Route that can be used for testing with the mqttSimulator. The current version implements the Pico version, so this route isnt used without changing the code
 app.post('/irrigate', (req, res) => {
   client.publish('telefarm/irrigate', 'true', function(err) {
     if (err) {
